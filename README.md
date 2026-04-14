@@ -15,6 +15,32 @@ Adding a new name (e.g., "periodic") in the JSON configuration does not create a
 Unsupported boundary types will be ignored or rejected.
 If a user uses conflicting tags, i.e., have the same number try to represent two different types of boundary conditions, the program will throw an error and exit.
 
+For example:
+
+```
+{
+	"boundary_mapping": {
+		"Dirichlet": [
+			23,
+			5,
+			42,
+		],
+		"Natural": [
+			1,
+			17,
+            1
+		],
+		"Dragon": [
+			2,
+			15,
+			2
+		]
+	}
+}
+```
+
+Dirichlet is already 5 but now 23 and 42 are also going to be Dirichlet. 1 is Natural but now 17 is also natural. It just ignores repetitions within the same BC and takes in only one. In case, there is a repetition between tags, i.e., same number appearing between two boundary condition types, it will throw an error. Also, "Dragon" boundary condition is just plainly ignored because it is not supported by tandem (yet!).
+
 In summary, users can customize how boundary conditions are tagged, but not define new boundary condition types beyond what Tandem currently supports.
 
 ## Build, run and clean

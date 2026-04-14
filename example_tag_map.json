@@ -1,0 +1,17 @@
+{
+	"boundary_mapping": {
+		"Dirichlet": [
+			23,
+			5,
+			42
+		],
+		"Natural": [
+			1,
+			17
+		],
+		"Dragon": [
+			2,
+			15
+		]
+	}
+}

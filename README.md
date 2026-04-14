@@ -5,7 +5,7 @@ This is a proposal repo which is trying to test out an alternative to using fixe
 
 Instead of assigning a single numeric tag to each boundary condition, we map each boundary condition to a dynamic list of tags. This allows users to extend the mapping at runtime and define their own tagging scheme.
 
-By default, Tandem provides a predefined mapping to ensure backward compatibility. However, users can supply additional tags through a JSON configuration. These user-defined tags are appended to the defaults, giving more flexibility in how geometries are labeled.
+By default, Tandem provides a predefined mapping to ensure backward compatibility. However, users can supply additional tags through a JSON configuration. These user-defined tags are appended to the defaults, giving more flexibility in how geometries are labeled. We use the header-only [nlohmann](https://github.com/nlohmann/json/tree/develop/single_include/nlohmann) library for our JSON parsing. 
 
 In practice, this means you can associate multiple numeric tags with a specific boundary condition and use any of those tags when defining your geometry. This shifts control to the user, making it easier to adapt simulations to different tagging conventions.
 

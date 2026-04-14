@@ -13,6 +13,7 @@ Important Notes
 Only boundary conditions with implemented numerical support are valid.
 Adding a new name (e.g., "periodic") in the JSON configuration does not create a new boundary condition.
 Unsupported boundary types will be ignored or rejected.
+If a user uses conflicting tags, i.e., have the same number try to represent two different types of boundary conditions, the program will throw an error and exit.
 
 In summary, users can customize how boundary conditions are tagged, but not define new boundary condition types beyond what Tandem currently supports.
 
@@ -36,3 +37,5 @@ and to clean, run
 ```
 make clean
 ```
+
+Eventually, if this is agreeable, we would use this in the ```GlobalSimplexMeshBuilder``` in tandem where we would just check if the tag is "in" the list that the particular BC is mapped to. Therefore, we would have the correct tags in the Lua file and the correct enum value in the BoundaryData map.

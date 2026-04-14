@@ -1,6 +1,7 @@
 #include "BC.h"
 #include "json.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
@@ -50,8 +51,18 @@ int main() {
   std::ifstream f("example_tag_map.json");
   json data = json::parse(f);
 
-  for (auto &bcMap : data["boundary_mapping"]
-                         .items()) { // Loop through each BC mapping in the JSON
+  // Build ownership map from default tags
+  std::unordered_map<long int, BC> tag_owner;
+  for (const auto &[bc, tags] : bc_enum_to_tags_mapping) {
+    for (const auto &tag : tags) {
+      tag_owner[tag] = bc;
+    }
+  }
+
+  static std::unordered_map<BC, std::string> bc_enum_to_name_mapping =
+      make_reverse_map();
+
+  for (auto &bcMap : data["boundary_mapping"].items()) {
     auto it = bc_name_to_enum_mapping.find(bcMap.key());
     if (it != bc_name_to_enum_mapping.end()) {
       auto bc = it->second;
@@ -60,13 +71,25 @@ int main() {
       std::vector<long int> newTags =
           bcMap.value().get<std::vector<long int>>();
 
-      // Append to existing vector
-      auto &vec = bc_enum_to_tags_mapping[bc];
-      vec.insert(vec.end(), newTags.begin(), newTags.end());
-
-      // Remove duplicates
-      std::sort(vec.begin(), vec.end());
-      vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+      for (const auto &tag : newTags) {
+        auto ownerIt = tag_owner.find(tag);
+        if (ownerIt != tag_owner.end() && ownerIt->second != bc) {
+          // Tag already claimed by a different BC — throw error and stop
+          if (ownerIt != tag_owner.end() && ownerIt->second != bc) {
+            std::cerr << "Error: conflicting tags, same tag value " << tag
+                      << " cannot belong to both '"
+                      << bc_enum_to_name_mapping[ownerIt->second] << "' and '"
+                      << bcMap.key() << "'.\n";
+            return 1;
+          }
+        } else {
+          auto &vec = bc_enum_to_tags_mapping[bc];
+          if (std::find(vec.begin(), vec.end(), tag) == vec.end()) {
+            vec.push_back(tag);
+            tag_owner[tag] = bc;
+          }
+        }
+      }
     } else {
       std::cout << "BC is not supported by tandem yet: " << bcMap.key() << '\n';
     }
